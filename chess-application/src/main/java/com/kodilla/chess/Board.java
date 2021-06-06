@@ -18,6 +18,7 @@ public class Board {
         for (int n = 0; n < 8; n++)
             rows.add(new BoardRow());
     }
+
     public Piece getPiece(int col, int row){
         return rows.get(row).getCols().get(col);
     }
@@ -45,54 +46,58 @@ public class Board {
         }
     }
 
+    public Color opponentMove(Color whoMoves) {
+        return (whoMoves==Color.WHITE) ? Color.BLACK : Color.WHITE;
+    }
+
     public void move(int col1, int row1, int col2, int row2) {
         Piece piece = getPiece(col1, row1);
-        int deltaCol = col2-col1;
-        int deltaRow = row2-row1;
+        int dCol = col2-col1;
+        int dRow = row2-row1;
         if (piece.getColor() != whoMoves) {
             return;
         }
         if (getPiece(col2, row2).getColor() == opponentMove(whoMoves)) {
             if (piece.getMoves().iterator().next().isMoveOver()) {
-                if(checkPossibleMoves(piece,deltaCol,deltaRow,true)){
+                if(possibleMoves(piece,dCol,dRow,true)){
                     makeAMove(col1,row1,col2,row2,piece);
                 }
             } else {
-                if(isMoveOverFalse(col1,row1,col2,row2,piece,deltaCol,deltaRow,true)){
+                if(moveOverFalse(col1,row1,col2,row2,piece,dCol,dRow,true)){
                     makeAMove(col1,row1,col2,row2,piece);
                 }
             }
         } else {
             if (piece.getMoves().iterator().next().isMoveOver()) {
-                if(checkPossibleMoves(piece,deltaCol,deltaRow,false)){
+                if(possibleMoves(piece,dCol,dRow,false)){
                     makeAMove(col1,row1,col2,row2,piece);
                 }
             } else {
-                if(isMoveOverFalse(col1,row1,col2,row2,piece,deltaCol,deltaRow,false)){
+                if(moveOverFalse(col1,row1,col2,row2,piece,dCol,dRow,false)){
                     makeAMove(col1,row1,col2,row2,piece);
                 }
             }
         }
     }
 
-    public boolean checkPossibleMoves(Piece piece, int deltaCol, int deltaRow, boolean isHit){
+    public boolean possibleMoves(Piece piece, int dCol, int dRow, boolean isHit){
         for (int n = 0; n < piece.getMoves().size(); n++) {
-            if (deltaCol == piece.getMoves().get(n).getCol() && deltaRow == piece.getMoves().get(n).getRow() && isHit==(piece.getMoves().get(n).getMoveKind()== MoveKind.HIT)) {
+            if (dCol == piece.getMoves().get(n).getCol() && dRow == piece.getMoves().get(n).getRow() && isHit==(piece.getMoves().get(n).getMoveKind()== MoveKind.HIT)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isMoveOverFalse(int col1, int row1, int col2, int row2, Piece piece, int deltaCol, int deltaRow, boolean isHit) {
+    public boolean moveOverFalse(int col1, int row1, int col2, int row2, Piece piece, int dCol, int dRow, boolean isHit) {
         if (firstMove(col1, row1)) {
-            if(pathIsClear(col1,row1,col2,row2)){
-                return checkPossibleMoves(piece,deltaCol,deltaRow,isHit);
+            if(clearPath(col1,row1,col2,row2)){
+                return possibleMoves(piece,dCol,dRow,isHit);
             }
         } else {
             for (int n = 0; n < piece.getMoves().size(); n++) {
-                if (deltaCol == piece.getMoves().get(n).getCol() && deltaRow == piece.getMoves().get(n).getRow()&& isHit==(piece.getMoves().get(n).getMoveKind()==MoveKind.HIT)) {
-                    if (pathIsClear(col1, row1, col2, row2)) {
+                if (dCol == piece.getMoves().get(n).getCol() && dRow == piece.getMoves().get(n).getRow()&& isHit==(piece.getMoves().get(n).getMoveKind()==MoveKind.HIT)) {
+                    if (clearPath(col1, row1, col2, row2)) {
                         return true;
                     }
                 }
@@ -108,7 +113,6 @@ public class Board {
         System.out.println(whoMoves);
     }
 
-
     public boolean firstMove(int col1, int row1){
         if(getPiece(col1,row1).isFirstMove()){
             getPiece(col1, row1).setFirstMove(false);
@@ -117,11 +121,7 @@ public class Board {
         return false;
     }
 
-    public Color opponentMove(Color whoMoves) {
-        return (whoMoves==Color.WHITE) ? Color.BLACK : Color.WHITE;
-    }
-
-    private boolean pathIsClear(int col1, int row1, int col2, int row2) {
+    private boolean clearPath(int col1, int row1, int col2, int row2) {
         boolean result = true;
         int dCol = col2-col1;
         int dRow = row2-row1;
@@ -135,8 +135,6 @@ public class Board {
         }
         return result;
     }
-
-
 
     public void initBoard() {
         setPiece(0, 6, new Pawn(Color.WHITE));
