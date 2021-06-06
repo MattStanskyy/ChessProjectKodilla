@@ -1,0 +1,26 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'java'
+}
+
+javafx {
+    version = "11.0.2"
+    modules = [ 'javafx.controls' ]
+}
+
+group 'com.kodilla'
+version '0.0.1-SNAPSHOT'
+mainClassName = 'com.kodilla.chess.Chess'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+test {
+    useJUnitPlatform()
+}
